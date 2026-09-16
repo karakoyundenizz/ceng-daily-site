@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-15",
+  "id": "ds-union-find",
+  "track": "DS",
+  "track_name": "Data Structures",
+  "course": "CENG213 / CENG315",
+  "title": "Disjoint-Set Forests: Union by Rank and Path Compression",
+  "sections": [
+    {
+      "heading": "The Disjoint-Set ADT",
+      "body": "A disjoint-set data structure maintains a collection $\\mathcal{S} = \\{S_1, S_2, \\dots, S_k\\}$ of pairwise disjoint dynamic sets over a universe of $n$ elements. Each set is identified by a **representative**, one of its members. The only requirement is consistency: asking for the representative twice without an intervening modification must return the same element.\n\nThe ADT has three operations:\n\n- `MAKE-SET(x)`: create the singleton $\\{x\\}$; $x$ must not already belong to some set.\n- `FIND-SET(x)`: return the representative of the set containing $x$.\n- `UNION(x, y)`: replace the sets $S_x \\ni x$ and $S_y \\ni y$ by $S_x \\cup S_y$, destroying the originals.\n\nCosts are stated in terms of two parameters: $n$, the number of `MAKE-SET` operations (so the number of elements), and $m$, the total number of operations **including** those $n$ `MAKE-SET`s. Each successful `UNION` reduces the number of sets by one, so at most $n-1$ unions can ever merge anything, and $m \\ge n$.\n\nThe structure answers exactly one kind of query — *are $x$ and $y$ currently equivalent?* — via `FIND-SET(x) == FIND-SET(y)`. In other words it maintains the equivalence closure of a stream of assertions \"$x \\sim y$\", which is precisely what incremental connectivity, Kruskal's algorithm and type unification need. It does **not** support splitting a set or deleting an element; those require much heavier machinery such as link-cut trees, Euler-tour trees or fully dynamic connectivity structures."
+    },
+    {
+      "heading": "From Linked Lists to Forests",
+      "body": "The simplest representation stores each set as a linked list whose head is the representative, with every node holding a back-pointer to the head. `FIND-SET` is then $O(1)$, but `UNION` must rewrite the head pointer of every node in one of the lists. A sequence that repeatedly appends a long list onto a singleton costs $\\Theta(n^2)$ in total.\n\nThe **weighted-union heuristic** always appends the shorter list onto the longer one. Fix any element $x$. Whenever its back-pointer is rewritten, $x$ was in the smaller set, so the size of the set containing $x$ at least doubles. After $k$ rewrites that set has at least $2^k$ members, and no set exceeds $n$ elements, so $k \\le \\lceil \\lg n \\rceil$. Summing over all $n$ elements gives $O(m + n \\lg n)$ for the whole sequence.\n\nA **disjoint-set forest** avoids touching every member during a union. Each set is a rooted tree, each node stores only a parent pointer $x.p$, and the root (the unique node with $x.p = x$) is the representative:\n\n- `FIND-SET(x)` follows parent pointers to the root, so its cost is the depth of $x$.\n- `UNION(x, y)` finds both roots and makes one a child of the other — $O(1)$ beyond the two finds.\n\nWithout further care a forest degenerates into a chain: linking $n$ singletons in an unlucky order creates a path of length $n-1$, and a single `FIND-SET` costs $\\Theta(n)$. Two heuristics fix this, and they are complementary: one controls how trees are built, the other repairs them during queries."
+    },
+    {
+      "heading": "Union by Rank and Path Compression",
+      "body": "**Union by rank.** Every node carries an integer $x.rank$, an upper bound on its height. `MAKE-SET` initializes the rank to 0. When two roots are linked, the root of smaller rank becomes a child of the root of larger rank; on a tie, either root becomes the parent and its rank is incremented. Ranks change only on ties, and only at roots.\n\nWith union by rank the following properties hold (path compression never changes ranks, so they survive it):\n\n1. $x.rank < x.p.rank$ for every non-root $x$ — ranks strictly increase along any path toward the root.\n2. A root of rank $r$ has at least $2^r$ nodes in its tree. *Proof by induction:* a root reaches rank $r+1$ only by being linked with another root of rank $r$; each tree has $\\ge 2^r$ nodes, so the result has $\\ge 2^{r+1}$.\n3. Consequently every rank is at most $\\lfloor \\lg n \\rfloor$, and at most $n/2^r$ nodes ever have rank $r$ (their subtrees at the moment they reached rank $r$ are disjoint).\n\nSince height $\\le$ rank $\\le \\lfloor \\lg n \\rfloor$, union by rank alone makes each `FIND-SET` $O(\\lg n)$ in the worst case, and $m$ operations cost $O(m \\lg n)$.\n\n**Path compression.** During `FIND-SET(x)`, once the root is known, make *every* node on the find path point directly to the root. It is a two-pass method: one pass up to locate the root, one pass (or the unwinding of the recursion) to rewrite the pointers. Compression does not update any rank, so afterwards a rank is only an upper bound on height, not the height itself.\n\nOne-pass alternatives achieve the same asymptotic bound with better constant factors and no second traversal: **path halving** (set $x.p \\leftarrow x.p.p$, then move to the new $x.p$) and **path splitting** (every node on the path is redirected to its grandparent). Likewise, **union by size** (link the tree with fewer nodes under the other) can replace union by rank without changing any bound."
+    },
+    {
+      "heading": "Amortized Analysis: The Inverse Ackermann Bound",
+      "body": "Tarjan (1975) proved that with both heuristics, any sequence of $m$ operations of which $n$ are `MAKE-SET` runs in $O(m\\,\\alpha(n))$ worst-case time, where $\\alpha$ is a functional inverse of Ackermann's function. CLRS uses the following variant, defined for integers $k \\ge 0$ and $j \\ge 1$:\n\n$$A_k(j) = \\begin{cases} j + 1 & \\text{if } k = 0,\\\\ A_{k-1}^{(j+1)}(j) & \\text{if } k \\ge 1,\\end{cases}$$\n\nwhere $f^{(i)}$ denotes $i$-fold iteration of $f$. One can show $A_1(j) = 2j + 1$ and $A_2(j) = 2^{j+1}(j+1) - 1$, and evaluating at $j = 1$ gives\n\n$$A_0(1) = 2,\\quad A_1(1) = 3,\\quad A_2(1) = 7,\\quad A_3(1) = A_2(7) = 2047,\\quad A_4(1) = A_3(2047) \\gg A_2(2047) > 2^{2048}.$$\n\nDefine $\\alpha(n) = \\min\\{k : A_k(1) \\ge n\\}$. Then $\\alpha(n) \\le 4$ for all $n \\le A_4(1)$, a number astronomically larger than the $\\approx 10^{80}$ atoms in the observable universe.\n\nThe proof uses the **potential method**. For a non-root node $x$ with $x.rank \\ge 1$ define\n\n- $\\text{level}(x) = \\max\\{k : x.p.rank \\ge A_k(x.rank)\\}$, which satisfies $0 \\le \\text{level}(x) < \\alpha(n)$, and\n- $\\text{iter}(x) = \\max\\{i : x.p.rank \\ge A^{(i)}_{\\text{level}(x)}(x.rank)\\}$, which satisfies $1 \\le \\text{iter}(x) \\le x.rank$.\n\nThe potential of $x$ is $\\alpha(n)\\cdot x.rank$ if $x$ is a root or has rank 0, and $(\\alpha(n) - \\text{level}(x))\\cdot x.rank - \\text{iter}(x)$ otherwise; it is never negative. Consider a non-root node $x$ with positive rank on a find path, followed later on the same path by a non-root node $y$ with $\\text{level}(y) = \\text{level}(x) = k$. After compression the new parent of $x$ has rank at least $A_k(y.rank) \\ge A_k(x.p.rank)$, so either $\\text{iter}(x)$ increases or $\\text{level}(x)$ increases — and in both cases $x$'s potential drops by at least 1. The nodes without such a $y$ are the root, the first node if its rank is 0, and the last node of each level: at most $\\alpha(n) + 2$ nodes. The potential decrease pays for all other pointer hops, giving amortized costs of $O(1)$ for `MAKE-SET` and $O(\\alpha(n))$ for `LINK` and `FIND-SET`.\n\nThe bound is tight: Fredman and Saks (1989) proved an $\\Omega(\\alpha(n))$ amortized lower bound per operation in the cell-probe model, so no data structure for this problem can do asymptotically better. Note that $O(m\\,\\alpha(n))$ bounds the *sequence*; an individual `FIND-SET` can still cost $\\Theta(\\lg n)$."
+    },
+    {
+      "heading": "Variants and Engineering Notes",
+      "body": "- **Array layout.** With elements numbered $0,\\dots,n-1$, `parent` is an `int` array and `rank` fits in a byte because $rank \\le \\lfloor \\lg n \\rfloor < 64$. A common trick stores the negated set size in the root slot (`parent[r] = -size`), which gives union by size with a single array.\n- **Rollback DSU.** When unions must be undone (offline dynamic connectivity over a segment tree of time intervals, backtracking search), use union by rank **without** path compression and push each link onto a stack; undo pops the stack and restores one parent pointer and one rank. Each operation is $O(\\lg n)$ worst case. Amortized bounds are useless here because an adversary can undo and redo an expensive operation indefinitely.\n- **Weighted (potential) DSU.** Store at each node its relation to its parent — a parity bit, or an offset $d(x) = \\text{val}(x) - \\text{val}(x.p)$ — and compose relations while compressing. This checks bipartiteness incrementally, or detects contradictions in constraint systems of the form $x_i - x_j = c$.\n- **Recursion depth.** The textbook recursive `FIND-SET` recurses to the depth of $x$. Union by rank keeps that at most $\\lg n$, but implementations that skip it can overflow the stack on adversarial inputs (Python's default recursion limit is 1000). Prefer the iterative two-pass loop or path halving.\n- **Concurrency.** Concurrent union-find with CAS on parent pointers exists — Anderson and Woll (1991) gave a wait-free version and Jayanti and Tarjan (2016) a randomized linking scheme with provable work bounds — and is used in parallel connected-components algorithms."
+    }
+  ],
+  "complexity": [
+    {
+      "operation": "MAKE-SET",
+      "time": "$O(1)$",
+      "space": "$O(1)$ per element",
+      "notes": "Parent points to itself, rank 0"
+    },
+    {
+      "operation": "FIND-SET, plain forest",
+      "time": "$O(n)$ worst case",
+      "space": "$O(1)$ extra",
+      "notes": "Chains of length $n-1$ are possible"
+    },
+    {
+      "operation": "FIND-SET, union by rank only",
+      "time": "$O(\\lg n)$ worst case",
+      "space": "$O(1)$ extra",
+      "notes": "Height ≤ rank ≤ ⌊lg n⌋"
+    },
+    {
+      "operation": "FIND-SET / UNION, rank + compression",
+      "time": "$O(\\alpha(n))$ amortized; $O(\\lg n)$ worst case",
+      "space": "$O(1)$ extra (iterative)",
+      "notes": "Optimal in the cell-probe model (Fredman–Saks)"
+    },
+    {
+      "operation": "$m$ operations, rank + compression",
+      "time": "$O(m\\,\\alpha(n))$ total",
+      "space": "$\\Theta(n)$",
+      "notes": "$\\alpha(n) \\le 4$ for any realistic $n$"
+    },
+    {
+      "operation": "$m$ operations, linked lists + weighted union",
+      "time": "$O(m + n \\lg n)$ total",
+      "space": "$\\Theta(n)$",
+      "notes": "Each back-pointer is rewritten at most $\\lceil \\lg n \\rceil$ times"
+    }
+  ],
+  "code": {
+    "language": "c",
+    "caption": "Array-based union-find with union by rank and iterative two-pass path compression; main() replays the worked example.",
+    "source": "#include <stdio.h>\n#include <stdlib.h>\n\ntypedef struct {\n    int *parent;\n    unsigned char *rank;              /* rank <= floor(lg n), fits in a byte */\n} DSU;\n\nDSU dsu_make(int n) {\n    DSU d = { malloc(n * sizeof(int)), calloc(n, 1) };\n    for (int i = 0; i < n; i++)\n        d.parent[i] = i;              /* MAKE-SET(i) */\n    return d;\n}\n\nint dsu_find(DSU *d, int x) {\n    int root = x;\n    while (d->parent[root] != root)   /* pass 1: locate the root */\n        root = d->parent[root];\n    while (d->parent[x] != root) {    /* pass 2: path compression */\n        int next = d->parent[x];\n        d->parent[x] = root;\n        x = next;\n    }\n    return root;\n}\n\n/* Returns 1 if two different sets were merged, 0 if a and b were already together. */\nint dsu_union(DSU *d, int a, int b) {\n    int ra = dsu_find(d, a), rb = dsu_find(d, b);\n    if (ra == rb) return 0;\n    if (d->rank[ra] < d->rank[rb]) { int t = ra; ra = rb; rb = t; }\n    d->parent[rb] = ra;               /* link lower rank under higher */\n    if (d->rank[ra] == d->rank[rb]) d->rank[ra]++;\n    return 1;\n}\n\nint main(void) {\n    DSU d = dsu_make(8);\n    int ops[][2] = {{0,1}, {2,3}, {0,2}, {4,5}, {6,7}, {4,6}, {0,4}};\n    for (int i = 0; i < 7; i++)\n        dsu_union(&d, ops[i][0], ops[i][1]);\n    int r = dsu_find(&d, 7);\n    printf(\"find(7) = %d, rank = %d, parent[6] = %d\\n\", r, d.rank[r], d.parent[6]);\n    free(d.parent);\n    free(d.rank);\n    return 0;\n}"
+  },
+  "worked_example": {
+    "problem": "Start from `MAKE-SET(0)`, …, `MAKE-SET(7)`. Use union by rank (on a tie, the root of the **first** argument becomes the parent) and full path compression. Execute\n\n`UNION(0,1)`, `UNION(2,3)`, `UNION(0,2)`, `UNION(4,5)`, `UNION(6,7)`, `UNION(4,6)`, `UNION(0,4)`, then `FIND-SET(7)`.\n\nShow the `parent` array after each step, check the $|T| \\ge 2^{rank}$ property, and describe the effect of the final find.",
+    "solution": "Every union below is called on two current roots, so the finds inside `UNION` do no compression.\n\n| Step | Operation | Link decision | `parent[0..7]` | Rank change |\n|---|---|---|---|---|\n| 0 | 8 × MAKE-SET | — | `0 1 2 3 4 5 6 7` | all 0 |\n| 1 | UNION(0,1) | tie 0/0 → 1 under 0 | `0 0 2 3 4 5 6 7` | rank[0] = 1 |\n| 2 | UNION(2,3) | tie 0/0 → 3 under 2 | `0 0 2 2 4 5 6 7` | rank[2] = 1 |\n| 3 | UNION(0,2) | tie 1/1 → 2 under 0 | `0 0 0 2 4 5 6 7` | rank[0] = 2 |\n| 4 | UNION(4,5) | tie 0/0 → 5 under 4 | `0 0 0 2 4 4 6 7` | rank[4] = 1 |\n| 5 | UNION(6,7) | tie 0/0 → 7 under 6 | `0 0 0 2 4 4 6 6` | rank[6] = 1 |\n| 6 | UNION(4,6) | tie 1/1 → 6 under 4 | `0 0 0 2 4 4 4 6` | rank[4] = 2 |\n| 7 | UNION(0,4) | tie 2/2 → 4 under 0 | `0 0 0 2 0 4 4 6` | rank[0] = 3 |\n\nThe forest is now a single tree:\n\n```text\n0 (rank 3)\n├── 1 (0)\n├── 2 (1)\n│   └── 3 (0)\n└── 4 (2)\n    ├── 5 (0)\n    └── 6 (1)\n        └── 7 (0)\n```\n\nIts height is 3 = rank[0], and it has $8 = 2^3$ nodes, so property 2 holds with equality — this \"binomial\" shape is exactly the worst case for union by rank. Ranks strictly increase along the path $7 (0) \\to 6 (1) \\to 4 (2) \\to 0 (3)$, as property 1 requires.\n\n**FIND-SET(7).** Pass 1 walks $7 \\to 6 \\to 4 \\to 0$ (3 hops). Pass 2 sets `parent[7] = 0` and `parent[6] = 0`; `parent[4]` is already 0. The array becomes `0 0 0 2 0 4 0 0`:\n\n```text\n0 (rank 3)\n├── 1 (0)\n├── 2 (1)\n│   └── 3 (0)\n├── 4 (2)\n│   └── 5 (0)\n├── 6 (1)\n└── 7 (0)\n```\n\nThe height is now 2 but rank[0] is still 3, and node 6 is a leaf with rank 1: ranks are only upper bounds after compression. Property 1 still holds because 6 and 7 now point to a node of rank 3. A second `FIND-SET(7)` costs a single hop."
+  },
+  "pitfalls": [
+    "**Linking non-roots.** Writing `parent[a] = b` instead of `parent[find(a)] = find(b)` detaches `a` from its old set and silently corrupts the partition.",
+    "**Treating rank as height.** After path compression a rank is only an upper bound; code that uses it as an exact depth (e.g., for LCA or balancing decisions) is wrong.",
+    "**Calling FIND-SET O(1).** The bound is $O(\\alpha(n))$ *amortized*. A single operation can still take $\\Theta(\\lg n)$, which matters for real-time code and for rollback structures.",
+    "**Combining path compression with undo.** Compression rewrites pointers that are never logged, so a rollback DSU must use union by rank or size only and accept $O(\\lg n)$ per operation.",
+    "**Deep recursion.** A recursive find on an unbalanced forest can overflow the stack (Python's recursion limit, small thread stacks); use the iterative loop or path halving.",
+    "**Expecting deletion or split.** Neither is supported. Deletion is usually emulated by assigning the element a fresh id; genuine splitting needs dynamic connectivity structures."
+  ],
+  "applications": [
+    "**Kruskal's MST.** After sorting edges, edge $(u,v)$ is accepted iff `FIND-SET(u) ≠ FIND-SET(v)`. The union-find work is $O(E\\,\\alpha(V))$, so the $O(E \\lg E)$ sort dominates.",
+    "**Type inference.** Hindley–Milner style unification merges type variables into equivalence classes with union-find; rustc, for example, uses union-find unification tables (the `ena` crate) during inference.",
+    "**Register allocation.** Iterated register coalescing (George & Appel) merges non-interfering, move-related temporaries of the interference graph into a single node through alias chains, a union-find structure.",
+    "**Connected-component labeling.** Two-pass image labeling records label equivalences during the first raster scan and resolves them with FIND in the second; OpenCV's `connectedComponents` implements union-find based variants of this scheme.",
+    "**Tarjan's offline LCA.** All $q$ lowest-common-ancestor queries on an $n$-node tree are answered in one DFS by unioning each finished subtree into its parent, in $O((n + q)\\,\\alpha(n))$ time plus the DFS.",
+    "**Incremental connectivity.** Percolation-threshold simulations and network monitoring under edge insertions ask \"are $u$ and $v$ connected yet?\" millions of times."
+  ],
+  "self_check": [
+    {
+      "question": "Path compression can turn a node of rank 5 into a leaf while its root has rank 6. Why is it safe never to update ranks, and which invariants does the $O(m\\,\\alpha(n))$ analysis actually rely on?",
+      "answer": "The analysis never uses exact heights. It needs (i) $x.rank < x.p.rank$ for every non-root, and (ii) at most $n/2^r$ nodes have rank $r$, which implies $rank \\le \\lfloor \\lg n \\rfloor$. Compression only replaces $x.p$ by a proper ancestor of $x.p$, whose rank is even larger, so (i) is preserved. Property (ii) is a statement about the moments at which ranks were assigned during links, and compression assigns no ranks, so it is untouched. Recomputing true heights would require extra traversals and would destroy the counting argument that bounds how many nodes can share a rank."
+    },
+    {
+      "question": "With union by rank but **no** path compression, what is the maximum height of a tree over $n = 1000$ elements? Construct a sequence of unions that forces a single FIND-SET to take that many hops.",
+      "answer": "Height ≤ rank ≤ $\\lfloor \\lg 1000 \\rfloor = 9$. To reach it, take 512 elements and merge them in rounds of equal-rank pairs: 256 unions of singletons give rank-1 trees, 128 unions of those give rank-2 trees, and so on. After 9 rounds (511 unions in total) there is one tree of rank 9 with exactly $2^9 = 512$ nodes, and each tie-link increased the height by one, so its deepest node is at depth 9. `FIND-SET` on that node follows 9 parent pointers. The remaining 488 elements cannot raise the rank further, since rank 10 would require $2^{10} = 1024 > 1000$ nodes."
+    },
+    {
+      "question": "Kruskal's algorithm runs on a connected graph with $V = 10^6$ and $E = 5 \\cdot 10^6$ whose edge weights are integers in $[0, 1023]$. Give the running time, identify the bottleneck, and propose an improvement.",
+      "answer": "With a comparison sort, sorting costs $O(E \\lg E)$, about $5\\cdot10^6 \\times 22.3 \\approx 1.1 \\cdot 10^8$ comparisons, and dominates. The union-find part performs at most $2E = 10^7$ finds and $V - 1$ links, costing $O(E\\,\\alpha(V))$ with $\\alpha(V) \\le 4$. Because weights are small integers, counting sort takes $O(E + 1024) = O(E)$, which makes the whole algorithm $O(E\\,\\alpha(V))$, i.e., effectively linear. Memory for the DSU is about 4 MB for a 32-bit parent array plus 1 MB for ranks."
+    }
+  ],
+  "key_points": [
+    "Three ops: MAKE-SET, FIND-SET, UNION; each set is a rooted tree whose root is the representative.",
+    "Union by rank alone keeps height ≤ ⌊lg n⌋, so FIND-SET is O(lg n) worst case.",
+    "A root of rank r has at least 2^r nodes; ranks strictly increase toward the root.",
+    "Rank + path compression: O(m·α(n)) for m ops, and α(n) ≤ 4 for any practical n.",
+    "After compression rank is only an upper bound on height; ranks are never updated.",
+    "Used by Kruskal's MST, type unification, offline LCA and image component labeling."
+  ],
+  "tagline": "Union by rank + path compression make m union-find operations cost O(m·α(n)) — effectively linear, and provably optimal.",
+  "tldr": "A disjoint-set forest represents each set as a rooted tree whose root is the representative. **Union by rank** keeps every tree at height $\\le \\lfloor \\lg n \\rfloor$, and **path compression** flattens find paths as a side effect of queries. Together they give $O(m\\,\\alpha(n))$ total time for $m$ operations on $n$ elements — optimal in the cell-probe model and effectively linear, since $\\alpha(n) \\le 4$ for any input that fits in the universe.",
+  "references": [
+    "Cormen, Leiserson, Rivest & Stein — Introduction to Algorithms, 4th ed., chapter “Data Structures for Disjoint Sets” (Chapter 19; Chapter 21 in the 3rd ed.)",
+    "R. E. Tarjan, “Efficiency of a Good But Not Linear Set Union Algorithm,” Journal of the ACM, 1975",
+    "R. E. Tarjan and J. van Leeuwen, “Worst-Case Analysis of Set Union Algorithms,” Journal of the ACM, 1984",
+    "M. L. Fredman and M. E. Saks, “The Cell Probe Complexity of Dynamic Data Structures,” STOC 1989",
+    "Sedgewick & Wayne — Algorithms, 4th ed., chapter “Fundamentals”, case study “Union-Find”"
+  ],
+  "related_topics": [
+    {
+      "id": "algo-mst",
+      "title": "Minimum Spanning Trees: Kruskal and Prim",
+      "track": "ALGO"
+    },
+    {
+      "id": "algo-amortized-analysis",
+      "title": "Amortized Analysis: Aggregate, Accounting and Potential Methods",
+      "track": "ALGO"
+    },
+    {
+      "id": "ds-splay-tree",
+      "title": "Splay Trees",
+      "track": "DS"
+    },
+    {
+      "id": "ds-graph-representations",
+      "title": "Graph Representations",
+      "track": "DS"
+    }
+  ],
+  "generated": {
+    "provider": "fixture",
+    "model": "fixture (hand-written sample)",
+    "at": "2026-09-15T18:25:56+00:00",
+    "pass": 1
+  }
+}

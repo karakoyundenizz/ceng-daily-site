@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-09-15T18:25:56+00:00",
+  "cards": [
+    {
+      "date": "2026-09-15",
+      "id": "ds-union-find",
+      "track": "DS",
+      "course": "CENG213 / CENG315",
+      "title": "Disjoint-Set Forests: Union by Rank and Path Compression",
+      "tagline": "Union by rank + path compression make m union-find operations cost O(m·α(n)) — effectively linear, and provably optimal."
+    }
+  ]
+}
