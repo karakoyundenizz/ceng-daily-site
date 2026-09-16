@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-16T13:33:52+00:00",
+  "updated_at": "2026-09-16T13:52:57+00:00",
   "cards": [
+    {
+      "date": "2026-09-17",
+      "id": "os-signals",
+      "track": "OS",
+      "course": "CENG334",
+      "title": "Signals",
+      "tagline": "Signals are one-bit-per-type notices delivered on return to user mode; never queued, and only async-signal-safe calls belong in a handler."
+    },
     {
       "date": "2026-09-16",
       "id": "arch-cache-performance",
