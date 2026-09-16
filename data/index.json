@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-16T13:31:33+00:00",
+  "updated_at": "2026-09-16T13:33:52+00:00",
   "cards": [
     {
       "date": "2026-09-16",
@@ -7,7 +7,7 @@
       "track": "ARCH",
       "course": "CENG331",
       "title": "Cache Performance Analysis: AMAT and the Memory Hierarchy",
-      "tagline": "AMAT = hit time + miss rate × miss penalty, applied recursively L1→L2→L3→DRAM, so a point at the top outweighs a big latency cut at the bottom."
+      "tagline": "AMAT = hit time + miss rate × miss penalty, applied recursively L1→L2→L3→DRAM: a small top-level miss-rate cut beats a big DRAM latency cut."
     },
     {
       "date": "2026-09-15",
