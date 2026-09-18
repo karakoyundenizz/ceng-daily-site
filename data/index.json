@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-16T13:52:57+00:00",
+  "updated_at": "2026-09-18T04:39:55+00:00",
   "cards": [
+    {
+      "date": "2026-09-18",
+      "id": "algo-dp-foundations",
+      "track": "ALGO",
+      "course": "CENG315",
+      "title": "Dynamic Programming Foundations",
+      "tagline": "DP = optimal substructure + overlapping subproblems; rod cutting shows the Θ(n²) table and the choice array that reconstructs the cuts."
+    },
     {
       "date": "2026-09-17",
       "id": "os-signals",
