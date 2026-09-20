@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-18T04:39:55+00:00",
+  "updated_at": "2026-09-20T04:43:37+00:00",
   "cards": [
+    {
+      "date": "2026-09-20",
+      "id": "ds-stack-queue",
+      "track": "DS",
+      "course": "CENG213 / CENG315",
+      "title": "Stacks, Queues and Ring Buffers",
+      "tagline": "One sequence, two disciplines: LIFO stacks and FIFO queues, built from arrays, linked lists, ring buffers, or two stacks glued together."
+    },
     {
       "date": "2026-09-18",
       "id": "algo-dp-foundations",
