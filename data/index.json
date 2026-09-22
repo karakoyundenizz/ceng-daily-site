@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-21T03:16:56+00:00",
+  "updated_at": "2026-09-22T03:06:08+00:00",
   "cards": [
+    {
+      "date": "2026-09-22",
+      "id": "os-bankers-algorithm",
+      "track": "OS",
+      "course": "CENG334",
+      "title": "Deadlock Avoidance: The Banker's Algorithm",
+      "tagline": "Grant a resource request only if the resulting state still has a safe order in which every thread can finish."
+    },
     {
       "date": "2026-09-21",
       "id": "arch-spectre-meltdown",
