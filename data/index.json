@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-22T03:06:08+00:00",
+  "updated_at": "2026-09-23T05:09:01+00:00",
   "cards": [
+    {
+      "date": "2026-09-23",
+      "id": "algo-dfs",
+      "track": "ALGO",
+      "course": "CENG315",
+      "title": "Depth-First Search",
+      "tagline": "DFS stamps discovery/finish times whose nesting proves ancestry, classifies every edge, and detects cycles in Θ(V+E)."
+    },
     {
       "date": "2026-09-22",
       "id": "os-bankers-algorithm",
