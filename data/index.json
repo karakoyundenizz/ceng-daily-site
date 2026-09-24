@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-23T05:09:01+00:00",
+  "updated_at": "2026-09-24T15:10:15+00:00",
   "cards": [
+    {
+      "date": "2026-09-24",
+      "id": "ds-bst",
+      "track": "DS",
+      "course": "CENG213 / CENG315",
+      "title": "Binary Search Trees",
+      "tagline": "A BST turns SEARCH into a root-to-leaf walk — O(lg n) on random input, O(n) on sorted input, hence self-balancing variants in practice."
+    },
     {
       "date": "2026-09-23",
       "id": "algo-dfs",
