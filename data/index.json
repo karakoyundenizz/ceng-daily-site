@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-24T15:10:15+00:00",
+  "updated_at": "2026-09-25T04:50:16+00:00",
   "cards": [
+    {
+      "date": "2026-09-25",
+      "id": "arch-bit-manipulation",
+      "track": "ARCH",
+      "course": "CENG331",
+      "title": "Bit Manipulation and Byte Ordering",
+      "tagline": "Endianness fixes which byte sits lowest in memory; masks, shifts and popcount/ctz tricks manipulate the bits inside each byte."
+    },
     {
       "date": "2026-09-24",
       "id": "ds-bst",
