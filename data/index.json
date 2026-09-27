@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-26T09:14:33+00:00",
+  "updated_at": "2026-09-27T03:10:48+00:00",
   "cards": [
+    {
+      "date": "2026-09-27",
+      "id": "algo-recurrences",
+      "track": "ALGO",
+      "course": "CENG315",
+      "title": "Solving Recurrences: Substitution and Recursion Trees",
+      "tagline": "A substitution proof is strong induction on a guessed closed form; a recursion tree just tells you which form to guess."
+    },
     {
       "date": "2026-09-26",
       "id": "os-xv6-walkthrough",
