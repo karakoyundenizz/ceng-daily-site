@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-27T03:31:27+00:00",
+  "updated_at": "2026-09-28T03:27:06+00:00",
   "cards": [
+    {
+      "date": "2026-09-28",
+      "id": "ds-van-emde-boas",
+      "track": "DS",
+      "course": "CENG213 / CENG315",
+      "title": "van Emde Boas Trees",
+      "tagline": "A van Emde Boas tree answers predecessor queries over universe size u in O(lg lg u), splitting u recursively into √u clusters of size √u."
+    },
     {
       "date": "2026-09-27",
       "id": "algo-recurrences",
