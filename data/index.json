@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-28T03:45:01+00:00",
+  "updated_at": "2026-09-29T04:23:21+00:00",
   "cards": [
+    {
+      "date": "2026-09-29",
+      "id": "arch-buffer-overflow",
+      "track": "ARCH",
+      "course": "CENG331",
+      "title": "Buffer Overflow Attacks and Defenses",
+      "tagline": "A stack overflow can overwrite a return address; canaries, ASLR and NX/DEP each close a different path back to control of %rip."
+    },
     {
       "date": "2026-09-28",
       "id": "ds-van-emde-boas",
