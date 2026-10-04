@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-09-29T04:59:40+00:00",
+  "updated_at": "2026-10-04T05:23:22+00:00",
   "cards": [
+    {
+      "date": "2026-10-04",
+      "id": "os-system-calls",
+      "track": "OS",
+      "course": "CENG334",
+      "title": "System Call Mechanism: Trapping from User Mode to the Kernel",
+      "tagline": "A syscall trades a few register loads for a privileged mode switch — on this machine, about 80x the cost of doing the same arithmetic in user space."
+    },
     {
       "date": "2026-09-29",
       "id": "arch-buffer-overflow",
