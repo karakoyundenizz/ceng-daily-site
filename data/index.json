@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-10-04T09:22:15+00:00",
+  "updated_at": "2026-10-05T05:37:13+00:00",
   "cards": [
+    {
+      "date": "2026-10-05",
+      "id": "algo-a-star",
+      "track": "ALGO",
+      "course": "CENG315",
+      "title": "A* Search and Heuristics",
+      "tagline": "A* expands nodes by f=g+h; with a consistent heuristic it is exactly Dijkstra on reduced costs — same optimality, far fewer vertices expanded."
+    },
     {
       "date": "2026-10-04",
       "id": "os-system-calls",
