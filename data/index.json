@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-10-05T19:06:46+00:00",
+  "updated_at": "2026-10-06T09:11:08+00:00",
   "cards": [
+    {
+      "date": "2026-10-06",
+      "id": "ds-deque-monotonic",
+      "track": "DS",
+      "course": "CENG213 / CENG315",
+      "title": "Deques and Monotonic Stacks/Queues",
+      "tagline": "A monotonicity invariant on a deque turns sliding-window maximum, next-greater-element and histogram-rectangle queries into one O(n) pass."
+    },
     {
       "date": "2026-10-05",
       "id": "algo-a-star",
