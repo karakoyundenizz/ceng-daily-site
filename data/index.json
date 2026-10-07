@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-10-06T09:24:46+00:00",
+  "updated_at": "2026-10-07T05:05:24+00:00",
   "cards": [
+    {
+      "date": "2026-10-07",
+      "id": "arch-data-hazards",
+      "track": "ARCH",
+      "course": "CENG331",
+      "title": "Data Hazards in PIPE: Forwarding, Stalling and Bubbles",
+      "tagline": "PIPE forwards valE/valM from E, M and W into Decode for free, except load/use, which costs exactly one stall cycle and a bubble."
+    },
     {
       "date": "2026-10-06",
       "id": "ds-deque-monotonic",
