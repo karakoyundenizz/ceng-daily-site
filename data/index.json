@@ -1,6 +1,14 @@
 {
-  "updated_at": "2026-10-07T07:34:11+00:00",
+  "updated_at": "2026-10-11T05:27:16+00:00",
   "cards": [
+    {
+      "date": "2026-10-11",
+      "id": "os-crash-consistency",
+      "track": "OS",
+      "course": "CENG334",
+      "title": "Crash Consistency: fsck and Journaling",
+      "tagline": "fsck rebuilds file-system invariants with an O(disk) scan; journaling logs updates first so recovery costs O(log size) instead."
+    },
     {
       "date": "2026-10-07",
       "id": "arch-data-hazards",
